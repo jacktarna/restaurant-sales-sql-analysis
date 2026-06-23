@@ -1,0 +1,49 @@
+-- Top Ten Best Selling Items
+
+SELECT
+    m.item_id,
+    SUM(o.quantity) AS total_quantity,
+    ROUND(SUM(o.quantity * o.price),2) AS revenue
+FROM "order_items (2)" o
+JOIN menu_items m
+ON o.item_id = m.item_id
+GROUP BY m.item_id
+ORDER BY revenue DESC
+LIMIT 10;
+
+-- Top Ten Most Ordered Items
+
+SELECT
+    item_id,
+    SUM(quantity) AS total_quantity
+FROM "order_items (2)"
+GROUP BY item_id
+ORDER BY total_quantity DESC
+LIMIT 10;
+
+-- Revenue By Item
+
+SELECT
+    item_id,
+    ROUND(SUM(quantity * price),2) AS revenue
+FROM "order_items (2)"
+GROUP BY item_id
+ORDER BY revenue DESC;
+
+-- Number of Order Per Item
+
+SELECT
+    item_id,
+    COUNT(DISTINCT order_id) AS orders
+FROM "order_items (2)"
+GROUP BY item_id
+ORDER BY orders DESC;
+
+-- Most Expensive Items
+
+SELECT
+    item_id,
+    price
+FROM menu_items
+ORDER BY price DESC
+LIMIT 10;
