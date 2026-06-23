@@ -1,0 +1,54 @@
+-- Revenue Contribution Percentage
+
+SELECT
+    item_id,
+    ROUND(SUM(quantity * price),2) AS revenue,
+    ROUND(
+        SUM(quantity * price) * 100 /
+        SUM(SUM(quantity * price)) OVER (),2
+    ) AS revenue_percent
+FROM "order_items (2)"
+GROUP BY item_id;
+
+-- Items By Revenue
+
+SELECT
+    item_id,
+    ROUND(SUM(quantity * price),2) AS revenue,
+    RANK() OVER (
+        ORDER BY SUM(quantity * price) DESC
+    ) AS revenue_rank
+FROM "order_items (2)"
+GROUP BY item_id;
+
+-- Running Revenue
+
+SELECT
+    order_id,
+    ROUND(quantity * price,2) AS order_value,
+    SUM(quantity * price)
+    OVER(ORDER BY order_id) AS running_revenue
+FROM "order_items (2)";
+
+-- Top 20% Revenue Items
+
+WITH item_sales AS (
+
+SELECT
+    item_id,
+    SUM(quantity * price) AS revenue,
+    NTILE(5) OVER(
+        ORDER BY SUM(quantity * price) DESC
+    ) AS revenue_group
+
+FROM "order_items (2)"
+
+GROUP BY item_id
+
+)
+
+SELECT *
+
+FROM item_sales
+
+WHERE revenue_group = 1;
